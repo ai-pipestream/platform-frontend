@@ -35,9 +35,11 @@ COPY apps/platform-shell/src ./apps/platform-shell/src
 COPY apps/platform-shell/ui ./apps/platform-shell/ui
 COPY apps/platform-shell/tsconfig.json ./apps/platform-shell/
 
-# Build packages first
+# Build all packages (UI depends on shared-components and shared-nav)
 RUN pnpm --filter @io-pipeline/connector-shared build
 RUN pnpm --filter @io-pipeline/protobuf-forms build
+RUN pnpm --filter @io-pipeline/shared-components build
+RUN pnpm --filter @io-pipeline/shared-nav build
 
 # Build platform-shell backend (TypeScript → JavaScript in dist/)
 RUN cd apps/platform-shell && pnpm run build
@@ -73,6 +75,8 @@ RUN pnpm install --frozen-lockfile --prod && \
 # Copy built packages
 COPY --from=builder --chown=nodejs:nodejs /app/packages/connector-shared/dist ./packages/connector-shared/dist
 COPY --from=builder --chown=nodejs:nodejs /app/packages/protobuf-forms/dist ./packages/protobuf-forms/dist
+COPY --from=builder --chown=nodejs:nodejs /app/packages/shared-components/dist ./packages/shared-components/dist
+COPY --from=builder --chown=nodejs:nodejs /app/packages/shared-nav/dist ./packages/shared-nav/dist
 
 # Copy built backend
 COPY --from=builder --chown=nodejs:nodejs /app/apps/platform-shell/dist ./apps/platform-shell/dist

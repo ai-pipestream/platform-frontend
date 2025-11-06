@@ -30,7 +30,6 @@ export default defineConfig({
   },
   server: {
     port: 33000,
-    port: 33000,
     proxy: {
       // Proxy Connect protocol service requests (io.pipeline.*)
       '^/io\\.pipeline\\.': {
