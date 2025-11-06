@@ -24,7 +24,7 @@ COPY packages/shared-nav/package.json ./packages/shared-nav/
 COPY apps/platform-shell/package.json ./apps/platform-shell/
 COPY apps/platform-shell/ui/package.json ./apps/platform-shell/ui/
 
-# Install all dependencies (workspaces + platform-shell)
+# Install all dependencies (includes UI as workspace member)
 RUN pnpm install --frozen-lockfile
 
 # Copy source code for packages
@@ -78,8 +78,8 @@ COPY --from=builder --chown=nodejs:nodejs /app/packages/protobuf-forms/dist ./pa
 COPY --from=builder --chown=nodejs:nodejs /app/apps/platform-shell/dist ./apps/platform-shell/dist
 
 # Copy built frontend (static assets)
-# Vite builds to public/ in monorepo root
-COPY --from=builder --chown=nodejs:nodejs /app/public ./public
+# Vite builds to apps/platform-shell/public
+COPY --from=builder --chown=nodejs:nodejs /app/apps/platform-shell/public ./apps/platform-shell/public
 
 # Switch to non-root user
 USER nodejs

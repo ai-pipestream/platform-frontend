@@ -2,5 +2,6 @@
 packages:
   # Frontend applications (Docker containers)
   - 'apps/*'
+  - 'apps/*/ui'
   # Shared packages (internal only, not published)
   - 'packages/*'
