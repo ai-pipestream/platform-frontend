@@ -3,6 +3,8 @@
 ## Objective
 Create an automated setup that a Claude agent can execute to start the entire platform-frontend development environment from scratch, including all required backend services.
 
+## Requirements
+
 ## Architecture Philosophy
 
 **By Design: Instant Infrastructure for Developers**
