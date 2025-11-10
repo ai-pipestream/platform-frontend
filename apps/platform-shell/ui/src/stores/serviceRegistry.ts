@@ -4,11 +4,6 @@ import { createClient, ConnectError, Code } from '@connectrpc/connect'
 import { createConnectTransport } from '@connectrpc/connect-web'
 import { PlatformRegistration } from '@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb.ts'
 
-console.log('[ServiceRegistry] Loaded PlatformRegistration service descriptor:', PlatformRegistration)
-console.log('[ServiceRegistry] Service methods:', PlatformRegistration.methods)
-console.log('[ServiceRegistry] Method names:', Object.keys(PlatformRegistration.methods))
-console.log('[ServiceRegistry] Raw methods object:', PlatformRegistration.methods)
-
 export const useServiceRegistryStore = defineStore('serviceRegistry', () => {
   // State
   const availableServices = ref<Set<string>>(new Set())
@@ -99,10 +94,6 @@ export const useServiceRegistryStore = defineStore('serviceRegistry', () => {
       })
 
       const client = createClient(PlatformRegistration, transport)
-
-      console.log('[ServiceRegistry] PlatformRegistration service methods:', Object.keys(PlatformRegistration.methods))
-      console.log('[ServiceRegistry] Client methods:', Object.keys(client))
-      console.log('[ServiceRegistry] Has watchModules?', 'watchModules' in client, typeof client.watchModules)
 
       for await (const response of client.watchModules({}, {
         signal: moduleAbortController.signal,
