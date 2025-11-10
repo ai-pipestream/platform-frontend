@@ -1,8 +1,8 @@
 # Multi-stage build for platform-shell (monorepo)
 # This creates a single container with both the backend proxy and frontend UI
 #
-# Build from monorepo root: docker build -f apps/platform-shell/Dockerfile -t io-pipeline/platform-shell .
-# Run: docker run -p 38106:38106 io-pipeline/platform-shell
+# Build from monorepo root: docker build -f apps/platform-shell/Dockerfile -t ai-pipestream/platform-shell .
+# Run: docker run -p 38106:38106 ai-pipestream/platform-shell
 
 # Stage 1: Build backend and frontend
 FROM node:22-alpine AS builder
@@ -36,10 +36,10 @@ COPY apps/platform-shell/ui ./apps/platform-shell/ui
 COPY apps/platform-shell/tsconfig.json ./apps/platform-shell/
 
 # Build all packages (UI depends on shared-components and shared-nav)
-RUN pnpm --filter @io-pipeline/connector-shared build
-RUN pnpm --filter @io-pipeline/protobuf-forms build
-RUN pnpm --filter @io-pipeline/shared-components build
-RUN pnpm --filter @io-pipeline/shared-nav build
+RUN pnpm --filter @ai-pipestream/connector-shared build
+RUN pnpm --filter @ai-pipestream/protobuf-forms build
+RUN pnpm --filter @ai-pipestream/shared-components build
+RUN pnpm --filter @ai-pipestream/shared-nav build
 
 # Build platform-shell backend (TypeScript → JavaScript in dist/)
 RUN cd apps/platform-shell && pnpm run build
