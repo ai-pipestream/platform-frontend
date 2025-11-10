@@ -3,6 +3,38 @@
 ## Objective
 Create an automated setup that a Claude agent can execute to start the entire platform-frontend development environment from scratch, including all required backend services.
 
+## Architecture Philosophy
+
+**By Design: Instant Infrastructure for Developers**
+
+The platform is architected to get frontend developers productive IMMEDIATELY:
+
+1. **Published Dependencies:**
+   - `@ai-pipestream/grpc-stubs` is published to npm (no local build needed)
+   - Backend libraries published to Maven Central (versioned releases)
+
+2. **Docker-Managed Infrastructure:**
+   - `platform-registration-service` handles all backend infrastructure via Docker
+   - Consul, OpenSearch, and other services start automatically
+   - No complex setup required
+
+3. **🚧 TODO - Future Enhancement (Not Yet Implemented):**
+   - **Pre-built Docker Images:** Eventually `platform-registration-service` and ALL infrastructure will be published as Docker images to Docker Hub / ghcr.io
+   - **One Command Setup:** Developers will run: `docker compose up` and the ENTIRE backend infrastructure starts instantly
+   - **Zero Backend Knowledge:** Frontend devs won't need Java, Gradle, or any backend tools
+   - **Current State:** Still need to build platform-registration-service locally (but it handles everything else via Docker)
+
+**What This Means Today:**
+- Clone 2 repos (platform-frontend + platform-registration-service)
+- Run one startup script from platform-registration-service
+- Frontend is ready to develop
+
+**What This Will Mean (Future):**
+- Clone 1 repo (platform-frontend only)
+- Run `docker compose up`
+- Infrastructure auto-downloads and starts
+- Frontend is ready to develop in < 5 minutes
+
 ## Context
 
 **Current Manual Process:**
@@ -29,10 +61,36 @@ Create an automated setup that a Claude agent can execute to start the entire pl
 - Docker (optional, check: `docker --version`)
 
 **Required Repositories:**
-Must be cloned and accessible:
-- `/home/krickert/IdeaProjects/ai-pipestream/platform-frontend` (this repo)
-- `/home/krickert/IdeaProjects/ai-pipestream/platform-registration-service` (backend service)
-- Any other required services
+
+**For Frontend Development (Recommended Approach):**
+Only need to clone:
+- `https://github.com/ai-pipestream/platform-frontend` (this repo)
+- `https://github.com/ai-pipestream/platform-registration-service` (handles Docker infrastructure for you)
+
+**Why this works:**
+- `platform-libraries` (grpc-stubs) is published to Maven Central and npm
+- Dependencies are pulled from npm registry, not built locally
+- `platform-registration-service` includes Docker Compose that starts all infrastructure services
+- Frontend developers don't need to build the entire backend stack
+
+**Clone Instructions:**
+```bash
+# Create workspace directory
+mkdir -p ~/IdeaProjects/ai-pipestream
+cd ~/IdeaProjects/ai-pipestream
+
+# Clone frontend (this repo)
+git clone https://github.com/ai-pipestream/platform-frontend.git
+
+# Clone platform-registration-service (brings up infrastructure)
+git clone https://github.com/ai-pipestream/platform-registration-service.git
+```
+
+**Alternative (Full Stack Development):**
+If you need to modify grpc-stubs or backend libraries:
+- Clone `https://github.com/ai-pipestream/platform-libraries` (grpc-stubs source)
+- Build and publish to Maven local
+- See platform-libraries/grpc/UPDATING_GRPC_STUBS.md for workflow
 
 **Port Availability:**
 Agent should check these ports are free:
@@ -74,31 +132,35 @@ lsof -i :33000 >/dev/null 2>&1 && echo "WARNING: Port 33000 already in use"
 
 ### Step 2: Platform Registration Service (Backend)
 
-**Location:** `/home/krickert/IdeaProjects/ai-pipestream/platform-registration-service`
+**Location:** `~/IdeaProjects/ai-pipestream/platform-registration-service`
+
+**This service does TWO things:**
+1. Provides gRPC service discovery and registration
+2. Manages Docker infrastructure (automatically starts other backend services)
 
 ```bash
-cd /home/krickert/IdeaProjects/ai-pipestream/platform-registration-service
+cd ~/IdeaProjects/ai-pipestream/platform-registration-service
 
 # Pull latest changes
 git pull origin main
 
-# Build (if needed)
-./gradlew clean build -x test
-
-# Start in background
-./gradlew quarkusDev > /tmp/platform-registration.log 2>&1 &
+# The platform-registration-service has a startup script that:
+# - Builds the service
+# - Starts Docker infrastructure (Consul, other services)
+# - Starts the registration service itself
+./scripts/start-dev.sh > /tmp/platform-registration.log 2>&1 &
 REGISTRATION_PID=$!
-echo "Started platform-registration-service (PID: $REGISTRATION_PID)"
+echo "Started platform-registration-service with infrastructure (PID: $REGISTRATION_PID)"
 
 # Wait for service to be ready (check gRPC health)
 echo "Waiting for platform-registration-service to be ready..."
-for i in {1..30}; do
+for i in {1..60}; do
   grpcurl -plaintext -d '{"service":""}' localhost:38101 grpc.health.v1.Health/Check >/dev/null 2>&1
   if [ $? -eq 0 ]; then
     echo "✓ platform-registration-service is healthy"
     break
   fi
-  echo "Attempt $i/30: Waiting for platform-registration-service..."
+  echo "Attempt $i/60: Waiting for platform-registration-service and infrastructure..."
   sleep 2
 done
 
@@ -109,14 +171,24 @@ grpcurl -plaintext -d '{"service":""}' localhost:38101 grpc.health.v1.Health/Che
   tail -50 /tmp/platform-registration.log
   exit 1
 }
+
+# Verify infrastructure services are registered
+echo "Checking registered services..."
+grpcurl -plaintext -d '{}' localhost:38101 ai.pipestream.platform.registration.PlatformRegistration/ListServices | \
+  jq -r '.services[].serviceName' | head -10
 ```
+
+**Note:** The platform-registration-service uses Docker Compose internally to start:
+- Consul (service mesh)
+- Other backend services as needed
+- All configured to register with platform-registration automatically
 
 ### Step 3: Platform Frontend - Install Dependencies
 
-**Location:** `/home/krickert/IdeaProjects/ai-pipestream/platform-frontend`
+**Location:** `~/IdeaProjects/ai-pipestream/platform-frontend`
 
 ```bash
-cd /home/krickert/IdeaProjects/ai-pipestream/platform-frontend
+cd ~/IdeaProjects/ai-pipestream/platform-frontend
 
 # Pull latest changes
 git pull origin main
@@ -142,7 +214,7 @@ ls packages/shared-nav/dist/ >/dev/null 2>&1 || {
 ### Step 4: Platform Shell Backend (Web Proxy)
 
 ```bash
-cd /home/krickert/IdeaProjects/ai-pipestream/platform-frontend/apps/platform-shell
+cd ~/IdeaProjects/ai-pipestream/platform-frontend/apps/platform-shell
 
 # Build backend TypeScript
 pnpm run build
@@ -182,7 +254,7 @@ curl -f http://localhost:38106/proxy/health || {
 ### Step 5: Platform Shell UI (Vite Dev Server)
 
 ```bash
-cd /home/krickert/IdeaProjects/ai-pipestream/platform-frontend/apps/platform-shell/ui
+cd ~/IdeaProjects/ai-pipestream/platform-frontend/apps/platform-shell/ui
 
 # Set environment variables
 export VITE_BACKEND_URL=http://localhost:38106
