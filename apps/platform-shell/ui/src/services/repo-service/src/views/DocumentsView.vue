@@ -162,6 +162,7 @@ import DocumentUpload from '../components/DocumentUpload.vue'
 import DocumentPreview from '../components/DocumentPreview.vue'
 import { listPipeDocs, deletePipeDoc } from '../services/repositoryClient'
 import { createClient } from '@connectrpc/connect'
+import { createConnectTransport } from '@connectrpc/connect-web'
 import { NodeUploadService } from '@ai-pipestream/grpc-stubs/dist/repository/filesystem/upload/upload_service_pb'
 
 const props = defineProps<{
