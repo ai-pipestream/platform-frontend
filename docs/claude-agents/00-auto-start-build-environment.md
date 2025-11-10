@@ -25,15 +25,17 @@ The platform is architected to get frontend developers productive IMMEDIATELY:
    - **Current State:** Still need to build platform-registration-service locally (but it handles everything else via Docker)
 
 **What This Means Today:**
-- Clone 2 repos (platform-frontend + platform-registration-service)
-- Run one startup script from platform-registration-service
-- Frontend is ready to develop
+- ✅ Clone platform-registration-service → Gradle pulls ALL backend JARs from Maven Central
+- ✅ Run startup script → Docker brings up infrastructure (Consul, etc.)
+- ✅ Clone platform-frontend → npm pulls grpc-stubs from npm registry
+- ✅ Ready to develop frontend with full backend running
 
-**What This Will Mean (Future):**
-- Clone 1 repo (platform-frontend only)
+**What This Will Mean (Future - Docker Hub Images):**
+- Clone platform-frontend only
 - Run `docker compose up`
+- Pre-built platform-registration-service image pulls from Docker Hub
 - Infrastructure auto-downloads and starts
-- Frontend is ready to develop in < 5 minutes
+- Frontend ready in < 5 minutes with ZERO backend tools needed
 
 ## Context
 
@@ -62,35 +64,54 @@ The platform is architected to get frontend developers productive IMMEDIATELY:
 
 **Required Repositories:**
 
-**For Frontend Development (Recommended Approach):**
-Only need to clone:
-- `https://github.com/ai-pipestream/platform-frontend` (this repo)
-- `https://github.com/ai-pipestream/platform-registration-service` (handles Docker infrastructure for you)
+**For Frontend Development (Simplest Approach):**
 
-**Why this works:**
-- `platform-libraries` (grpc-stubs) is published to Maven Central and npm
-- Dependencies are pulled from npm registry, not built locally
-- `platform-registration-service` includes Docker Compose that starts all infrastructure services
-- Frontend developers don't need to build the entire backend stack
-
-**Clone Instructions:**
+Clone ONLY ONE repository:
 ```bash
 # Create workspace directory
 mkdir -p ~/IdeaProjects/ai-pipestream
 cd ~/IdeaProjects/ai-pipestream
 
-# Clone frontend (this repo)
-git clone https://github.com/ai-pipestream/platform-frontend.git
-
-# Clone platform-registration-service (brings up infrastructure)
+# Clone platform-registration-service (this brings up EVERYTHING)
 git clone https://github.com/ai-pipestream/platform-registration-service.git
 ```
 
-**Alternative (Full Stack Development):**
-If you need to modify grpc-stubs or backend libraries:
-- Clone `https://github.com/ai-pipestream/platform-libraries` (grpc-stubs source)
+**Why only one repo?**
+- ✅ **ALL backend JARs published to Maven Central** - No need to build anything locally
+- ✅ **grpc-stubs published to npm** - Frontend gets it automatically
+- ✅ **Docker Compose included** - Starts all infrastructure services (Consul, OpenSearch, etc.)
+- ✅ **Gradle pulls dependencies** - From Maven Central, not local builds
+
+**The platform-registration-service:**
+1. Downloads all dependencies from Maven Central
+2. Starts itself (port 38101)
+3. Starts Docker infrastructure via its docker-compose.yml
+4. Acts as service registry for all other services
+
+Then you just need to clone platform-frontend separately to develop the UI.
+
+**Full Setup:**
+```bash
+# 1. Clone and start backend infrastructure
+git clone https://github.com/ai-pipestream/platform-registration-service.git
+cd platform-registration-service
+./scripts/start-dev.sh   # Pulls Maven Central deps, starts Docker, starts service
+
+# 2. Clone frontend (in separate terminal/directory)
+cd ~/IdeaProjects/ai-pipestream
+git clone https://github.com/ai-pipestream/platform-frontend.git
+cd platform-frontend
+pnpm install            # Pulls grpc-stubs from npm
+pnpm -r build           # Build frontend packages
+# Then start backend and UI (see steps below)
+```
+
+**For Full-Stack Development (Backend Library Changes):**
+Only needed if modifying grpc-stubs or platform-libraries:
+- Clone `https://github.com/ai-pipestream/platform-libraries`
 - Build and publish to Maven local
-- See platform-libraries/grpc/UPDATING_GRPC_STUBS.md for workflow
+- Configure platform-registration-service to use Maven local
+- See platform-libraries/grpc/UPDATING_GRPC_STUBS.md
 
 **Port Availability:**
 Agent should check these ports are free:
