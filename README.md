@@ -61,12 +61,14 @@ corepack prepare pnpm@latest --activate
 # Install dependencies
 pnpm install
 
-# Build all packages
+# Build all packages (required before first run)
 pnpm build
 
-# Run Platform Shell in development mode
+# Run Platform Shell in development mode with hot-reload
 ./scripts/start-platform-shell.sh
 ```
+
+The build step compiles all packages and the platform-shell backend/UI. During development, the UI has hot-reload via Vite dev server.
 
 Access the platform at:
 - **Frontend (with hot-reload)**: http://localhost:33000
@@ -75,13 +77,18 @@ Access the platform at:
 ### Production
 
 ```bash
-# Build everything
+# Build all packages and applications
 pnpm build
 
-# Run in production mode
+# Run platform-shell in production mode
 cd apps/platform-shell
 NODE_ENV=production pnpm start
 ```
+
+The `pnpm build` command runs `pnpm -r build` which:
+1. Builds all packages in dependency order
+2. Compiles platform-shell backend (TypeScript → `dist/`)
+3. Builds platform-shell UI (Vite → `public/`)
 
 Access at: http://localhost:38106
 
@@ -106,8 +113,14 @@ Access at: http://localhost:38106
 
 ### Pre-built Images
 
-Images are automatically published to Gitea Container Registry on every push to `main`:
+Images are automatically published to container registries on every push to `main`:
 
+**GitHub Container Registry** (from GitHub Actions):
+```bash
+docker pull ghcr.io/io-pipeline/platform-shell:latest
+```
+
+**Gitea Container Registry** (from Gitea Actions):
 ```bash
 docker pull git.rokkon.com/io-pipeline/platform-shell:latest
 ```
@@ -162,7 +175,7 @@ The platform gracefully handles service unavailability:
 ### Building Packages
 
 ```bash
-# Build all packages
+# Build all packages (recursive)
 pnpm -r build
 
 # Build specific package
@@ -171,6 +184,14 @@ pnpm --filter @io-pipeline/shared-components build
 # Watch mode for development
 pnpm --filter @io-pipeline/shared-components dev
 ```
+
+**Build outputs by package:**
+- `shared-components` → `packages/shared-components/dist/` (Vite library mode)
+- `shared-nav` → `packages/shared-nav/dist/` (Vite library mode)
+- `connector-shared` → `packages/connector-shared/dist/` (TypeScript compiler)
+- `protobuf-forms` → `packages/protobuf-forms/dist/` (tsup)
+- `platform-shell` backend → `apps/platform-shell/dist/` (TypeScript compiler)
+- `platform-shell` UI → `apps/platform-shell/public/` (Vite static build)
 
 ### Publishing
 
@@ -291,24 +312,29 @@ const schema = createFormSchema(MyMessage);
 
 ## CI/CD
 
-### GitHub Actions
+### Automated Workflows
 
-Automated workflows for building, testing, and publishing:
+Both GitHub Actions and Gitea Actions run automated workflows for building and publishing:
 
-1. **Build and Test**: Runs on every push and PR
-   - Install dependencies
-   - Build all packages
-   - Verify build artifacts
+**Build and Test** (runs on every push and PR):
+- Install dependencies with `pnpm install --frozen-lockfile`
+- Build all packages with `pnpm -r build`
+- Verify build artifacts exist
 
-2. **Docker Build and Push**: Runs on `main` branch only
-   - Build Docker image
-   - Test container (frontend serves, API responds)
-   - Push to container registry
+**Docker Build and Push** (runs on `main` branch only):
+- Build Docker image from `apps/platform-shell/Dockerfile`
+- Test container functionality:
+  - Frontend HTML serving (port 38106)
+  - System status endpoint (accepts 200 or 503 for graceful degradation)
+- Tag with timestamp and git SHA
+- Push to container registry:
+  - GitHub workflow → `ghcr.io/io-pipeline/platform-shell`
+  - Gitea workflow → `git.rokkon.com/io-pipeline/platform-shell`
 
 ### Workflow Files
 
-- `.github/workflows/build-and-publish.yml`: GitHub Actions workflow
-- `.gitea/workflows/build-and-publish.yml`: Gitea Actions workflow (mirror)
+- `.github/workflows/build-and-publish.yml`: GitHub Actions workflow (publishes to ghcr.io)
+- `.gitea/workflows/build-and-publish.yml`: Gitea Actions workflow (publishes to git.rokkon.com)
 
 ## Dependencies
 
@@ -323,18 +349,20 @@ Automated workflows for building, testing, and publishing:
 
 ### Build Tools
 
-- **Vite**: Frontend build tool and dev server
-- **TypeScript**: Type-safe development
-- **tsx**: TypeScript execution
-- **tsup**: Library bundler
+- **Vite**: Frontend build tool (platform-shell UI, shared-components, shared-nav)
+- **TypeScript Compiler (tsc)**: Backend compilation (platform-shell backend, connector-shared)
+- **tsup**: Library bundler (protobuf-forms)
+- **tsx**: TypeScript execution for development
 
 ## Contributing
 
 1. Create a feature branch from `main`
 2. Make your changes
-3. Build and test locally: `pnpm build && pnpm test`
+3. Build locally: `pnpm build`
 4. Commit with descriptive messages
 5. Push and create a pull request
+
+Note: Test suite is not yet implemented. All packages currently have placeholder test commands.
 
 ## Troubleshooting
 
@@ -351,12 +379,17 @@ The development scripts will warn you if ports are in use:
 ### Build Failures
 
 ```bash
-# Clean and rebuild everything
-pnpm clean
+# Clean all build outputs
+pnpm -r clean
+
+# Deep clean (removes node_modules)
 rm -rf node_modules pnpm-lock.yaml
+rm -rf apps/*/node_modules packages/*/node_modules
 pnpm install
 pnpm build
 ```
+
+Note: The platform-shell UI is a separate workspace package that must be built after the shared packages it depends on.
 
 ### Docker Issues
 
