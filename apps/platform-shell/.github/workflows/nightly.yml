@@ -41,8 +41,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/io-pipeline/platform-shell:${{ steps.version.outputs.tag }}
-            ghcr.io/io-pipeline/platform-shell:latest
+            ghcr.io/ai-pipestream/platform-shell:${{ steps.version.outputs.tag }}
+            ghcr.io/ai-pipestream/platform-shell:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -51,8 +51,8 @@ jobs:
           # Clean up any existing test container
           docker rm -f test-shell 2>/dev/null || true
 
-          docker pull ghcr.io/io-pipeline/platform-shell:latest
-          docker run -d --name test-shell -p 38106:38106 ghcr.io/io-pipeline/platform-shell:latest
+          docker pull ghcr.io/ai-pipestream/platform-shell:latest
+          docker run -d --name test-shell -p 38106:38106 ghcr.io/ai-pipestream/platform-shell:latest
           echo "Waiting for container to be ready..."
           for i in {1..30}; do
             if curl -f http://localhost:38106/ >/dev/null 2>&1; then

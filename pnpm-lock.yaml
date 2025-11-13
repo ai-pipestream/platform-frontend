@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@ai-pipestream/grpc-stubs':
-      specifier: 0.1.6-alpha.20251110170250
-      version: 0.1.6-alpha.20251110170250
+      specifier: alpha
+      version: 0.1.6-alpha.20251113060417.7924e1d
     '@bufbuild/protobuf':
       specifier: ^2.10.0
       version: 2.10.0
@@ -43,7 +43,7 @@ importers:
     dependencies:
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
         specifier: ^2.10.0
         version: 2.10.0
@@ -85,7 +85,7 @@ importers:
         version: link:../../packages/connector-shared
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       '@ai-pipestream/protobuf-forms':
         specifier: workspace:*
         version: link:../../packages/protobuf-forms
@@ -140,7 +140,7 @@ importers:
         version: link:../../../packages/connector-shared
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       '@ai-pipestream/protobuf-forms':
         specifier: workspace:*
         version: link:../../../packages/protobuf-forms
@@ -225,7 +225,7 @@ importers:
     dependencies:
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
         specifier: 'catalog:'
         version: 2.10.0
@@ -296,7 +296,7 @@ importers:
     dependencies:
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
         specifier: 'catalog:'
         version: 2.10.0
@@ -345,7 +345,7 @@ importers:
     dependencies:
       '@ai-pipestream/grpc-stubs':
         specifier: 'catalog:'
-        version: 0.1.6-alpha.20251110170250
+        version: 0.1.6-alpha.20251113060417.7924e1d
       vue:
         specifier: 'catalog:'
         version: 3.5.24(typescript@5.9.3)
@@ -374,8 +374,8 @@ importers:
 
 packages:
 
-  '@ai-pipestream/grpc-stubs@0.1.6-alpha.20251110170250':
-    resolution: {integrity: sha512-UN9YxWwKpWj4ECrZSfHK8+ezixuqbM2sD/SleXXzeDbsIZ1XOB4HpB4wCEMB+2AYCTfAFcvqfsGiIOLzHa5AzA==}
+  '@ai-pipestream/grpc-stubs@0.1.6-alpha.20251113060417.7924e1d':
+    resolution: {integrity: sha512-rpK/c1SGl3FuQr6ks7ZCoHrtSQo2JVRAoS1yC9eTlIvlGquDGhR1JzX+Q9ISkScyoRfIB5bMgURDl8Y6v64LpQ==}
     engines: {node: '>=22.0.0 <23', pnpm: '>=10 <11'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -448,6 +448,9 @@ packages:
 
   '@bufbuild/protobuf@2.10.0':
     resolution: {integrity: sha512-fdRs9PSrBF7QUntpZpq6BTw58fhgGJojgg39m9oFOJGZT+nip9b0so5cYY1oWl5pvemDLr0cPPsH46vwThEbpQ==}
+
+  '@bufbuild/protobuf@2.10.1':
+    resolution: {integrity: sha512-ckS3+vyJb5qGpEYv/s1OebUHDi/xSNtfgw1wqKZo7MR9F2z+qXr0q5XagafAG/9O0QPVIUfST0smluYSTpYFkg==}
 
   '@bufbuild/protoc-gen-es@2.10.0':
     resolution: {integrity: sha512-g3xtuxeMkbacn8/qWQ8NbHBA8unLAvGD7sjcXV1/lfO4iCfd6hYL1Z+rn2yLQZE/JEkG+GPZoIs7m5KI5VYaMw==}
@@ -2693,11 +2696,11 @@ packages:
 
 snapshots:
 
-  '@ai-pipestream/grpc-stubs@0.1.6-alpha.20251110170250':
+  '@ai-pipestream/grpc-stubs@0.1.6-alpha.20251113060417.7924e1d':
     dependencies:
-      '@bufbuild/protobuf': 2.10.0
-      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
-      '@connectrpc/connect-web': 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+      '@bufbuild/protobuf': 2.10.1
+      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.1)
+      '@connectrpc/connect-web': 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
 
   '@babel/helper-string-parser@7.27.1': {}
 
@@ -2747,6 +2750,8 @@ snapshots:
 
   '@bufbuild/protobuf@2.10.0': {}
 
+  '@bufbuild/protobuf@2.10.1': {}
+
   '@bufbuild/protoc-gen-es@2.10.0(@bufbuild/protobuf@2.10.0)':
     dependencies:
       '@bufbuild/protoplugin': 2.10.0
@@ -2780,9 +2785,18 @@ snapshots:
       '@bufbuild/protobuf': 2.10.0
       '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
 
+  '@connectrpc/connect-web@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))':
+    dependencies:
+      '@bufbuild/protobuf': 2.10.1
+      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
+
   '@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0)':
     dependencies:
       '@bufbuild/protobuf': 2.10.0
+
+  '@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1)':
+    dependencies:
+      '@bufbuild/protobuf': 2.10.1
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
