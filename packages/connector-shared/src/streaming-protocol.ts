@@ -69,7 +69,7 @@ export function createHeaderChunk(
       case: 'header',
       value: blob,
     },
-  });
+  }) as StreamingChunk;
 }
 
 /**
@@ -89,7 +89,7 @@ export function createDataChunk(
       case: 'rawData',
       value: data,
     },
-  });
+  }) as StreamingChunk;
 }
 
 /**
@@ -124,7 +124,7 @@ export function createFooterChunk(
       case: 'footer',
       value: metadata,
     },
-  });
+  }) as StreamingChunk;
 }
 
 /**

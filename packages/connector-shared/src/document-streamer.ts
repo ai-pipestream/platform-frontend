@@ -183,7 +183,7 @@ export class DocumentStreamer {
         case: 'document',
         value: headerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     // Fire and forget header (don't wait for response)
     this.streamPool.queueDocument(headerRequest, false);
@@ -215,7 +215,7 @@ export class DocumentStreamer {
           case: 'document',
           value: dataDocumentData,
         },
-      });
+      }) as DocumentIntakeRequest;
 
       // Fire and forget data chunks (don't wait for response)
       this.streamPool.queueDocument(dataRequest, false);
@@ -245,7 +245,7 @@ export class DocumentStreamer {
         case: 'document',
         value: footerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     // Wait for response on footer to get final documentId (use relativePath as correlation key since that's the sourceId)
     const result = await this.streamPool.queueDocument(footerRequest, true, relativePath);
@@ -298,7 +298,7 @@ export class DocumentStreamer {
         case: 'document',
         value: headerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     await this.streamPool.queueDocument(headerRequest);
 
@@ -330,7 +330,7 @@ export class DocumentStreamer {
           case: 'document',
           value: dataDocumentData,
         },
-      });
+      }) as DocumentIntakeRequest;
 
       await this.streamPool.queueDocument(dataRequest);
       offset += chunkSize;
@@ -360,7 +360,7 @@ export class DocumentStreamer {
         case: 'document',
         value: footerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     const result = await this.streamPool.queueDocument(footerRequest);
 
@@ -412,7 +412,7 @@ export class DocumentStreamer {
         case: 'document',
         value: headerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     await this.streamPool.queueDocument(headerRequest);
 
@@ -449,7 +449,7 @@ export class DocumentStreamer {
             case: 'document',
             value: dataDocumentData,
           },
-        });
+        }) as DocumentIntakeRequest;
 
         await this.streamPool.queueDocument(dataRequest);
       }
@@ -478,7 +478,7 @@ export class DocumentStreamer {
           case: 'document',
           value: dataDocumentData,
         },
-      });
+      }) as DocumentIntakeRequest;
 
       await this.streamPool.queueDocument(dataRequest);
     }
@@ -507,7 +507,7 @@ export class DocumentStreamer {
         case: 'document',
         value: footerDocumentData,
       },
-    });
+    }) as DocumentIntakeRequest;
 
     const result = await this.streamPool.queueDocument(footerRequest);
 

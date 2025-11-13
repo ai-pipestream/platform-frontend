@@ -20,6 +20,10 @@ import {
   type RegisterConnectorRequest,
   type GetConnectorRequest,
   type ConnectorConfig,
+  type ConnectorRegistration,
+  type RegisterConnectorResponse,
+  type StartCrawlSessionResponse,
+  type EndCrawlSessionResponse,
 } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb';
 import chalk from 'chalk';
 
@@ -69,8 +73,8 @@ export class ConnectorClient {
       const connector = await Promise.race([
         connectorAdminClient.getConnector(getRequest),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-      ]) as any;
-      
+      ]) as ConnectorRegistration;
+
       console.log(chalk.green(`✓ Using existing connector: ${connector.connectorId}`));
       this.connectorId = connector.connectorId;
       this.apiKey = connector.apiKey;
@@ -94,8 +98,8 @@ export class ConnectorClient {
           rateLimitPerMinute: BigInt(1000),
         });
 
-        const response = await connectorAdminClient.registerConnector(registerRequest);
-        
+        const response = await connectorAdminClient.registerConnector(registerRequest) as RegisterConnectorResponse;
+
         console.log(chalk.green(`✓ Registered connector: ${response.connectorId}`));
         this.connectorId = response.connectorId;
         this.apiKey = response.apiKey;
@@ -138,8 +142,8 @@ export class ConnectorClient {
       deleteOrphans: false,
     });
 
-    const response = await intakeClient.startCrawlSession(request);
-    
+    const response = await intakeClient.startCrawlSession(request) as StartCrawlSessionResponse;
+
     if (response.success) {
       console.log(chalk.green(`✓ Started crawl session: ${response.sessionId}`));
       return response.sessionId;
@@ -181,8 +185,8 @@ export class ConnectorClient {
       },
     });
 
-    const response = await intakeClient.endCrawlSession(request);
-    
+    const response = await intakeClient.endCrawlSession(request) as EndCrawlSessionResponse;
+
     if (response.success) {
       console.log(chalk.green(`✓ Ended crawl session: ${sessionId}`));
       if (response.orphansFound > 0) {

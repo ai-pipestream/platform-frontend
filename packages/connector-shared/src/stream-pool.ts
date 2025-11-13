@@ -5,6 +5,7 @@ import { TimestampSchema } from '@bufbuild/protobuf/wkt';
 import {
   ConnectorIntakeService,
   DocumentIntakeRequestSchema,
+  DocumentIntakeResponseSchema,
   SessionStartSchema,
   type DocumentIntakeRequest,
   type DocumentIntakeResponse,
@@ -101,7 +102,7 @@ class StreamConnection extends EventEmitter {
       [Symbol.asyncIterator]: requestGenerator,
     };
 
-    this.stream = this.client.streamDocuments(requestIterable);
+    this.stream = this.client.streamDocuments(requestIterable) as Promise<DocumentIntakeResponse>;
     this.isActive = true;
 
     // Start consuming responses in background
