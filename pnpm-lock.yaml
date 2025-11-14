@@ -7,11 +7,11 @@ settings:
 catalogs:
   default:
     '@ai-pipestream/grpc-stubs':
-      specifier: alpha
+      specifier: 0.1.6-alpha.20251113060417.7924e1d
       version: 0.1.6-alpha.20251113060417.7924e1d
     '@bufbuild/protobuf':
-      specifier: ^2.10.0
-      version: 2.10.0
+      specifier: ^2.10.1
+      version: 2.10.1
     '@connectrpc/connect':
       specifier: ^2.1.0
       version: 2.1.0
@@ -45,20 +45,20 @@ importers:
         specifier: 'catalog:'
         version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
-        specifier: ^2.10.0
-        version: 2.10.0
+        specifier: ^2.10.1
+        version: 2.10.1
       '@connectrpc/connect':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)
       '@connectrpc/connect-express':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))(express@5.1.0)
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))(express@5.1.0)
       '@connectrpc/connect-node':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@connectrpc/connect-web':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@jsonforms/core':
         specifier: ^3.7.0-alpha.2
         version: 3.7.0-alpha.2
@@ -90,17 +90,17 @@ importers:
         specifier: workspace:*
         version: link:../../packages/protobuf-forms
       '@bufbuild/protobuf':
-        specifier: latest
-        version: 2.10.0
+        specifier: 'catalog:'
+        version: 2.10.1
       '@connectrpc/connect':
-        specifier: latest
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)
+        specifier: 'catalog:'
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)
       '@connectrpc/connect-express':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))(express@5.1.0)
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))(express@5.1.0)
       '@connectrpc/connect-node':
         specifier: ^2.1.0
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@types/multer':
         specifier: ^2.0.0
         version: 2.0.0
@@ -151,14 +151,14 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/shared-nav
       '@bufbuild/protobuf':
-        specifier: latest
-        version: 2.10.0
+        specifier: 'catalog:'
+        version: 2.10.1
       '@connectrpc/connect':
-        specifier: latest
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)
+        specifier: 'catalog:'
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)
       '@connectrpc/connect-web':
-        specifier: latest
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        specifier: 'catalog:'
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@fontsource/roboto':
         specifier: ^5.2.6
         version: 5.2.8
@@ -228,16 +228,16 @@ importers:
         version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
         specifier: 'catalog:'
-        version: 2.10.0
+        version: 2.10.1
       '@connectrpc/connect':
         specifier: 'catalog:'
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)
       '@connectrpc/connect-node':
         specifier: 'catalog:'
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@connectrpc/connect-web':
         specifier: 'catalog:'
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -259,7 +259,7 @@ importers:
     dependencies:
       '@bufbuild/protobuf':
         specifier: 'catalog:'
-        version: 2.10.0
+        version: 2.10.1
       '@jsonforms/core':
         specifier: 'catalog:'
         version: 3.7.0-alpha.2
@@ -277,8 +277,8 @@ importers:
         specifier: ^1.56.0
         version: 1.59.0
       '@bufbuild/protoc-gen-es':
-        specifier: ^2.7.0
-        version: 2.10.0(@bufbuild/protobuf@2.10.0)
+        specifier: ^2.10.1
+        version: 2.10.1(@bufbuild/protobuf@2.10.1)
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.0
@@ -299,13 +299,13 @@ importers:
         version: 0.1.6-alpha.20251113060417.7924e1d
       '@bufbuild/protobuf':
         specifier: 'catalog:'
-        version: 2.10.0
+        version: 2.10.1
       '@connectrpc/connect':
         specifier: 'catalog:'
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)
       '@connectrpc/connect-web':
         specifier: 'catalog:'
-        version: 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+        version: 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
       '@jsonforms/core':
         specifier: 'catalog:'
         version: 3.7.0-alpha.2
@@ -446,24 +446,21 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
 
-  '@bufbuild/protobuf@2.10.0':
-    resolution: {integrity: sha512-fdRs9PSrBF7QUntpZpq6BTw58fhgGJojgg39m9oFOJGZT+nip9b0so5cYY1oWl5pvemDLr0cPPsH46vwThEbpQ==}
-
   '@bufbuild/protobuf@2.10.1':
     resolution: {integrity: sha512-ckS3+vyJb5qGpEYv/s1OebUHDi/xSNtfgw1wqKZo7MR9F2z+qXr0q5XagafAG/9O0QPVIUfST0smluYSTpYFkg==}
 
-  '@bufbuild/protoc-gen-es@2.10.0':
-    resolution: {integrity: sha512-g3xtuxeMkbacn8/qWQ8NbHBA8unLAvGD7sjcXV1/lfO4iCfd6hYL1Z+rn2yLQZE/JEkG+GPZoIs7m5KI5VYaMw==}
+  '@bufbuild/protoc-gen-es@2.10.1':
+    resolution: {integrity: sha512-vsfbWs1X93oX+sMMJ7910/OwIizAYH5IOAArsxnSTifiop1fVgLFPAvJBLiHZoNMI8B/lbqji2SFwvjK0AWO1Q==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
-      '@bufbuild/protobuf': 2.10.0
+      '@bufbuild/protobuf': 2.10.1
     peerDependenciesMeta:
       '@bufbuild/protobuf':
         optional: true
 
-  '@bufbuild/protoplugin@2.10.0':
-    resolution: {integrity: sha512-GPJOZ1Gp9/Ci3MXP3yI7+q4G7IhB5cSpbLjsfnBILxtNx69I9+ix3r9P7JfewHvqMjtPe6L+YWX1LPBGNfZMGw==}
+  '@bufbuild/protoplugin@2.10.1':
+    resolution: {integrity: sha512-imB8dKEjrOnG5+XqVS+CeYn924WGLU/g3wogKhk11XtX9y9NJ7432OS6h24asuBbLrQcPdEZ6QkfM7KeOCeeyQ==}
 
   '@connectrpc/connect-express@2.1.0':
     resolution: {integrity: sha512-OQ/043Z0sDUZWaeY8/Vbywwo2F4VAlBCJgvziRTOvVT3C42hCAbA5YqEkvlYNmA0UQ4t9iMtlUDPAldJyXoQew==}
@@ -2700,7 +2697,7 @@ snapshots:
     dependencies:
       '@bufbuild/protobuf': 2.10.1
       '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.1)
-      '@connectrpc/connect-web': 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
+      '@connectrpc/connect-web': 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
 
   '@babel/helper-string-parser@7.27.1': {}
 
@@ -2748,51 +2745,40 @@ snapshots:
       '@bufbuild/buf-win32-arm64': 1.59.0
       '@bufbuild/buf-win32-x64': 1.59.0
 
-  '@bufbuild/protobuf@2.10.0': {}
-
   '@bufbuild/protobuf@2.10.1': {}
 
-  '@bufbuild/protoc-gen-es@2.10.0(@bufbuild/protobuf@2.10.0)':
+  '@bufbuild/protoc-gen-es@2.10.1(@bufbuild/protobuf@2.10.1)':
     dependencies:
-      '@bufbuild/protoplugin': 2.10.0
+      '@bufbuild/protoplugin': 2.10.1
     optionalDependencies:
-      '@bufbuild/protobuf': 2.10.0
+      '@bufbuild/protobuf': 2.10.1
     transitivePeerDependencies:
       - supports-color
 
-  '@bufbuild/protoplugin@2.10.0':
+  '@bufbuild/protoplugin@2.10.1':
     dependencies:
-      '@bufbuild/protobuf': 2.10.0
+      '@bufbuild/protobuf': 2.10.1
       '@typescript/vfs': 1.6.2(typescript@5.4.5)
       typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
 
-  '@connectrpc/connect-express@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))(express@5.1.0)':
-    dependencies:
-      '@bufbuild/protobuf': 2.10.0
-      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
-      '@connectrpc/connect-node': 2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))
-      express: 5.1.0
-
-  '@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))':
-    dependencies:
-      '@bufbuild/protobuf': 2.10.0
-      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
-
-  '@connectrpc/connect-web@2.1.0(@bufbuild/protobuf@2.10.0)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))':
-    dependencies:
-      '@bufbuild/protobuf': 2.10.0
-      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
-
-  '@connectrpc/connect-web@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0))':
+  '@connectrpc/connect-express@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1)))(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))(express@5.1.0)':
     dependencies:
       '@bufbuild/protobuf': 2.10.1
-      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.0)
+      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.1)
+      '@connectrpc/connect-node': 2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))
+      express: 5.1.0
 
-  '@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.0)':
+  '@connectrpc/connect-node@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))':
     dependencies:
-      '@bufbuild/protobuf': 2.10.0
+      '@bufbuild/protobuf': 2.10.1
+      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.1)
+
+  '@connectrpc/connect-web@2.1.0(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1))':
+    dependencies:
+      '@bufbuild/protobuf': 2.10.1
+      '@connectrpc/connect': 2.1.0(@bufbuild/protobuf@2.10.1)
 
   '@connectrpc/connect@2.1.0(@bufbuild/protobuf@2.10.1)':
     dependencies:
@@ -4421,7 +4407,7 @@ snapshots:
 
   sass-embedded@1.93.3:
     dependencies:
-      '@bufbuild/protobuf': 2.10.0
+      '@bufbuild/protobuf': 2.10.1
       buffer-builder: 0.2.0
       colorjs.io: 0.5.2
       immutable: 5.1.4

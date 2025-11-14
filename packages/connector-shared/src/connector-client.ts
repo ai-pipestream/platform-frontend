@@ -1,29 +1,9 @@
 import { createClient } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { create } from '@bufbuild/protobuf';
-import { TimestampSchema } from '@bufbuild/protobuf/wkt';
 import {
   ConnectorIntakeService,
   ConnectorAdminService,
-  SessionStartSchema,
-  DocumentDataSchema,
-  StartCrawlSessionRequestSchema,
-  EndCrawlSessionRequestSchema,
-  HeartbeatRequestSchema,
-  RegisterConnectorRequestSchema,
-  GetConnectorRequestSchema,
-  type SessionStart,
-  type DocumentData,
-  type StartCrawlSessionRequest,
-  type EndCrawlSessionRequest,
-  type HeartbeatRequest,
-  type RegisterConnectorRequest,
-  type GetConnectorRequest,
   type ConnectorConfig,
-  type ConnectorRegistration,
-  type RegisterConnectorResponse,
-  type StartCrawlSessionResponse,
-  type EndCrawlSessionResponse,
 } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb';
 import chalk from 'chalk';
 
@@ -65,15 +45,11 @@ export class ConnectorClient {
   ): Promise<{ connectorId: string; apiKey: string }> {
     try {
       // Try to get existing connector
-      const getRequest = create(GetConnectorRequestSchema, {
-        connectorId: connectorName,
-      });
-      
       // Add timeout to prevent hanging
       const connector = await Promise.race([
-        connectorAdminClient.getConnector(getRequest),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-      ]) as ConnectorRegistration;
+        connectorAdminClient.getConnector({ connectorId: connectorName }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+      ]);
 
       console.log(chalk.green(`✓ Using existing connector: ${connector.connectorId}`));
       this.connectorId = connector.connectorId;
@@ -84,7 +60,7 @@ export class ConnectorClient {
       if (error.code === 'NOT_FOUND' || error.message?.includes('not found') || error.message === 'Timeout') {
         console.log(chalk.yellow(`Registering new connector: ${connectorName}`));
         
-        const registerRequest = create(RegisterConnectorRequestSchema, {
+        const response = await connectorAdminClient.registerConnector({
           connectorName: connectorName,
           connectorType: 'filesystem',
           accountId: accountId,
@@ -97,8 +73,6 @@ export class ConnectorClient {
           maxFileSize: BigInt(104857600), // 100MB
           rateLimitPerMinute: BigInt(1000),
         });
-
-        const response = await connectorAdminClient.registerConnector(registerRequest) as RegisterConnectorResponse;
 
         console.log(chalk.green(`✓ Registered connector: ${response.connectorId}`));
         this.connectorId = response.connectorId;
@@ -125,24 +99,22 @@ export class ConnectorClient {
       throw new Error('Connector not registered. Call registerConnector() first.');
     }
 
-    const request = create(StartCrawlSessionRequestSchema, {
+    const response = await intakeClient.startCrawlSession({
       connectorId: this.connectorId,
       apiKey: this.apiKey,
       crawlId: crawlId,
       metadata: {
         connectorType: 'filesystem',
         connectorVersion: '1.0.0',
-        crawlStarted: create(TimestampSchema, {
+        crawlStarted: {
           seconds: BigInt(Math.floor(Date.now() / 1000)),
           nanos: 0,
-        }),
+        },
         sourceSystem: 'local-filesystem',
       },
       trackDocuments: true,
       deleteOrphans: false,
     });
-
-    const response = await intakeClient.startCrawlSession(request) as StartCrawlSessionResponse;
 
     if (response.success) {
       console.log(chalk.green(`✓ Started crawl session: ${response.sessionId}`));
@@ -165,7 +137,7 @@ export class ConnectorClient {
       bytesProcessed: number;
     }
   ): Promise<void> {
-    const request = create(EndCrawlSessionRequestSchema, {
+    const response = await intakeClient.endCrawlSession({
       sessionId: sessionId,
       crawlId: crawlId,
       summary: {
@@ -174,18 +146,16 @@ export class ConnectorClient {
         documentsFailed: summary.documentsFailed,
         documentsSkipped: 0,
         bytesProcessed: BigInt(summary.bytesProcessed),
-        started: create(TimestampSchema, {
+        started: {
           seconds: BigInt(Math.floor(Date.now() / 1000)),
           nanos: 0,
-        }),
-        completed: create(TimestampSchema, {
+        },
+        completed: {
           seconds: BigInt(Math.floor(Date.now() / 1000)),
           nanos: 0,
-        }),
+        },
       },
     });
-
-    const response = await intakeClient.endCrawlSession(request) as EndCrawlSessionResponse;
 
     if (response.success) {
       console.log(chalk.green(`✓ Ended crawl session: ${sessionId}`));
@@ -206,7 +176,7 @@ export class ConnectorClient {
     documentsQueued: number,
     documentsProcessing: number
   ): Promise<void> {
-    const request = create(HeartbeatRequestSchema, {
+    await intakeClient.heartbeat({
       sessionId: sessionId,
       crawlId: crawlId,
       documentsQueued: documentsQueued,
@@ -216,8 +186,6 @@ export class ConnectorClient {
         'cpu_percent': '0', // TODO: Add actual CPU monitoring
       },
     });
-
-    await intakeClient.heartbeat(request);
   }
 
   /**

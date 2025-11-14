@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.56.0",
-    "@bufbuild/protoc-gen-es": "^2.7.0",
+    "@bufbuild/protoc-gen-es": "^2.10.1",
     "@types/node": "^22.10.2",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",

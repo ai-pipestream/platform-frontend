@@ -38,8 +38,8 @@
   },
   "homepage": "https://github.com/ai-pipestream/platform-frontend#readme",
   "dependencies": {
-    "@bufbuild/protobuf": "latest",
-    "@connectrpc/connect": "latest",
+    "@bufbuild/protobuf": "catalog:",
+    "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-express": "^2.1.0",
     "@connectrpc/connect-node": "^2.1.0",
     "@ai-pipestream/grpc-stubs": "catalog:",

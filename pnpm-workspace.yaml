@@ -4,8 +4,8 @@ packages:
   - packages/*
 
 catalog:
-  '@ai-pipestream/grpc-stubs': alpha
-  '@bufbuild/protobuf': ^2.10.0
+  '@ai-pipestream/grpc-stubs': 0.1.6-alpha.20251113060417.7924e1d
+  '@bufbuild/protobuf': ^2.10.1
   '@connectrpc/connect': ^2.1.0
   '@connectrpc/connect-express': ^2.1.0
   '@connectrpc/connect-node': ^2.1.0

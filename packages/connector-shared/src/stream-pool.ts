@@ -1,15 +1,11 @@
 import { createClient, type Client } from '@connectrpc/connect';
 import { createGrpcTransport } from '@connectrpc/connect-node';
-import { create } from '@bufbuild/protobuf';
-import { TimestampSchema } from '@bufbuild/protobuf/wkt';
+import type { MessageInitShape } from '@bufbuild/protobuf';
 import {
   ConnectorIntakeService,
   DocumentIntakeRequestSchema,
-  DocumentIntakeResponseSchema,
-  SessionStartSchema,
   type DocumentIntakeRequest,
   type DocumentIntakeResponse,
-  type SessionStart,
 } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb';
 import chalk from 'chalk';
 import { EventEmitter } from 'events';
@@ -23,7 +19,7 @@ const CONNECTOR_INTAKE_SERVICE_URL = process.env.CONNECTOR_INTAKE_SERVICE_URL ||
 class StreamConnection extends EventEmitter {
   public readonly id: number;
   private stream: Promise<DocumentIntakeResponse> | null = null;
-  private requestQueue: DocumentIntakeRequest[] = [];
+  private requestQueue: MessageInitShape<typeof DocumentIntakeRequestSchema>[] = [];
   private isActive = false;
   private isClosed = false;
   private queueWaiters: Array<() => void> = [];
@@ -51,27 +47,25 @@ class StreamConnection extends EventEmitter {
     console.log(chalk.gray(`[Stream ${this.id}] Initializing...`));
 
     // Create session start request
-    const sessionStart = create(SessionStartSchema, {
-      connectorId: this.connectorId,
-      apiKey: this.apiKey,
-      crawlId: this.crawlId,
-      crawlMetadata: {
-        connectorType: 'filesystem',
-        connectorVersion: '1.0.0',
-        crawlStarted: create(TimestampSchema, {
-          seconds: BigInt(Math.floor(Date.now() / 1000)),
-          nanos: 0,
-        }),
-        sourceSystem: 'local-filesystem',
-      },
-    });
-
-    const sessionRequest = create(DocumentIntakeRequestSchema, {
+    const sessionRequest: MessageInitShape<typeof DocumentIntakeRequestSchema> = {
       sessionInfo: {
-        value: sessionStart,
-        case: 'sessionStart',
+        value: {
+          connectorId: this.connectorId,
+          apiKey: this.apiKey,
+          crawlId: this.crawlId,
+          crawlMetadata: {
+            connectorType: 'filesystem',
+            connectorVersion: '1.0.0',
+            crawlStarted: {
+              seconds: BigInt(Math.floor(Date.now() / 1000)),
+              nanos: 0,
+            },
+            sourceSystem: 'local-filesystem',
+          },
+        },
+        case: 'sessionStart' as const,
       },
-    });
+    };
 
     // Create async generator that yields from the queue
     const self = this;
@@ -91,7 +85,7 @@ class StreamConnection extends EventEmitter {
         // Yield all items from queue
         while (self.requestQueue.length > 0) {
           const request = self.requestQueue.shift()!;
-          console.log(chalk.gray(`[Stream ${self.id}] Yielding request: ${request.sessionInfo.case}`));
+          console.log(chalk.gray(`[Stream ${self.id}] Yielding request: ${request.sessionInfo?.case ?? 'unknown'}`));
           yield request;
         }
       }
@@ -102,7 +96,7 @@ class StreamConnection extends EventEmitter {
       [Symbol.asyncIterator]: requestGenerator,
     };
 
-    this.stream = this.client.streamDocuments(requestIterable) as Promise<DocumentIntakeResponse>;
+    this.stream = this.client.streamDocuments(requestIterable);
     this.isActive = true;
 
     // Start consuming responses in background
@@ -172,12 +166,12 @@ class StreamConnection extends EventEmitter {
    * Queue a document request to be sent on this stream
    * Only waits for response if waitForResponse is true (for footer chunks)
    */
-  queueRequest(request: DocumentIntakeRequest, waitForResponse: boolean = false, documentRef?: string): Promise<{ success: boolean; documentId?: string; error?: string }> {
+  queueRequest(request: MessageInitShape<typeof DocumentIntakeRequestSchema>, waitForResponse: boolean = false, documentRef?: string): Promise<{ success: boolean; documentId?: string; error?: string }> {
     if (this.isClosed) {
       return Promise.resolve({ success: false, error: 'Stream is closed' });
     }
 
-    console.log(chalk.gray(`[Stream ${this.id}] Queueing request: ${request.sessionInfo.case}`));
+    console.log(chalk.gray(`[Stream ${this.id}] Queueing request: ${request.sessionInfo?.case ?? 'unknown'}`));
 
     // Add to queue
     this.requestQueue.push(request);
@@ -308,7 +302,7 @@ export class StreamPool {
    * Queue a document request on the next available stream
    * Set waitForResponse=true for footer chunks to get the final documentId
    */
-  async queueDocument(request: DocumentIntakeRequest, waitForResponse: boolean = false, documentRef?: string): Promise<{ success: boolean; documentId?: string; error?: string }> {
+  async queueDocument(request: MessageInitShape<typeof DocumentIntakeRequestSchema>, waitForResponse: boolean = false, documentRef?: string): Promise<{ success: boolean; documentId?: string; error?: string }> {
     const stream = this.getNextStream();
     return stream.queueRequest(request, waitForResponse, documentRef);
   }

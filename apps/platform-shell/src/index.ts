@@ -6,8 +6,8 @@ import { createClient } from "@connectrpc/connect";
 import { createGrpcTransport } from "@connectrpc/connect-node";
 import { ConnectorIntakeService } from "@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb";
 import { DocumentStreamer } from "@ai-pipestream/connector-shared";
-import { Health, type HealthCheckResponse } from "@ai-pipestream/grpc-stubs/dist/grpc/health/v1/health_pb";
-import { PlatformRegistration, type ServiceListResponse, type ModuleListResponse } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
+import { Health } from "@ai-pipestream/grpc-stubs/dist/grpc/health/v1/health_pb";
+import { PlatformRegistration } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
 import { createDynamicTransport, clearServiceRegistry } from './lib/serviceResolver.js';
 import { createEmptyRegistryGroups, sortEntries, type RegistryEntry } from './models/registry.js';
 import connectRoutes from './routes/connectRoutes.js';
@@ -83,8 +83,8 @@ app.get('/connect/system-nav/menu-items.json', async (req, res) => {
         const client = createClient(PlatformRegistration, transport);
 
         const [servicesResp, modulesResp] = await Promise.all([
-            client.listServices({} as any) as Promise<ServiceListResponse>,
-            client.listModules({} as any) as Promise<ModuleListResponse>
+            client.listServices({}),
+            client.listModules({})
         ]);
 
         const SERVICE_UI_PATH: Record<string, string> = {
@@ -298,7 +298,7 @@ app.get('/connect/system/health-snapshot', async (req, res) => {
                 target = 'dynamic';
             }
             const client = createClient(Health, transport);
-            const response = await client.check({}) as HealthCheckResponse;
+            const response = await client.check({});
             return { name: serviceName, status: String(response.status), target, error: null };
         } catch (err: any) {
             return { name: serviceName, status: 'UNKNOWN', target, error: err?.message ?? String(err) };

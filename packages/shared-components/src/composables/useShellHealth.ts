@@ -118,8 +118,7 @@ export function useShellHealth() {
         signal: abortController.signal,
         timeoutMs: undefined
       })) {
-        const typedUpdate = update as ServiceHealthUpdate;
-        updates.value = new Map(updates.value).set(typedUpdate.serviceName, typedUpdate)
+        updates.value = new Map(updates.value).set(update.serviceName, update)
         reconnectAttempts.value = 0 // Reset on successful data
         error.value = null
       }

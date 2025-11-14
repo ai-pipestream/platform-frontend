@@ -1,8 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { createGrpcTransport } from "@connectrpc/connect-node";
-import { PlatformRegistration, ServiceDetails, type ServiceListResponse } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
-import { create } from "@bufbuild/protobuf";
-import { EmptySchema } from "@bufbuild/protobuf/wkt";
+import { PlatformRegistration, ServiceDetails } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
 
 // This map holds the live state of all healthy, registered services.
 // It is populated by the WatchServices stream.
@@ -30,11 +28,10 @@ const registrationClient = createClient(PlatformRegistration, registrationTransp
 async function watchAndCacheServices() {
   console.log("[ServiceResolver] Starting to watch for service updates...");
   try {
-    const stream = registrationClient.watchServices(create(EmptySchema, {}));
+    const stream = registrationClient.watchServices({});
     for await (const response of stream) {
-      const typedResponse = response as ServiceListResponse;
       const newRegistry = new Map<string, ServiceDetails>();
-      for (const service of typedResponse.services) {
+      for (const service of response.services) {
         newRegistry.set(service.serviceName, service);
       }
       // Atomically update the registry

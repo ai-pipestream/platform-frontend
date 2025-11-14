@@ -7,9 +7,9 @@
  *   3. Footer chunk: BlobMetadata with actual SHA256, size, S3 ETag
  */
 
-import { create } from '@bufbuild/protobuf';
 import { TimestampSchema } from '@bufbuild/protobuf/wkt';
-import { DocumentIntakeRequestSchema, DocumentDataSchema, type DocumentIntakeRequest } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb';
+import { create } from '@bufbuild/protobuf';
+import { DocumentIntakeRequestSchema, DocumentDataSchema, type DocumentIntakeRequest, type DocumentData } from '@ai-pipestream/grpc-stubs/dist/module/connectors/connector_intake_service_pb';
 import { ChecksumType } from '@ai-pipestream/grpc-stubs/dist/core/pipeline_core_types_pb';
 import { createReadStream, ReadStream } from 'fs';
 import { stat } from 'fs/promises';
@@ -156,7 +156,7 @@ export class DocumentStreamer {
     const headerChunk = createHeaderChunk(documentRef, metadata);
 
     // Create DocumentData with header
-    const headerDocumentData = create(DocumentDataSchema, {
+    const headerDocumentData = {
       sourceId: relativePath,
       filename: metadata.filename,
       path: metadata.path,
@@ -170,20 +170,20 @@ export class DocumentStreamer {
         seconds: BigInt(Math.floor(metadata.sourceModified.getTime() / 1000)),
         nanos: 0,
       }) : undefined,
-      sourceMetadata: metadata.sourceMetadata,
+      sourceMetadata: metadata.sourceMetadata ?? {},
       content: {
-        case: 'chunk',
-        value: headerChunk,
+        case: 'chunk' as const,
+        value: headerChunk as any, // Full StreamingChunk message is compatible with MessageInit
       },
-    });
+    };
 
     // Queue header
-    const headerRequest = create(DocumentIntakeRequestSchema, {
+    const headerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: headerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     // Fire and forget header (don't wait for response)
     this.streamPool.queueDocument(headerRequest, false);
@@ -198,24 +198,24 @@ export class DocumentStreamer {
 
       const dataChunk = createDataChunk(documentRef, chunkNumber++, buffer, false);
 
-      const dataDocumentData = create(DocumentDataSchema, {
+      const dataDocumentData = {
         sourceId: relativePath,
         filename: metadata.filename,
         path: metadata.path,
         mimeType: metadata.mimeType,
         sizeBytes: metadata.sizeBytes,
         content: {
-          case: 'chunk',
-          value: dataChunk,
+          case: 'chunk' as const,
+          value: dataChunk as any, // Full StreamingChunk message is compatible with MessageInit
         },
-      });
+      };
 
-      const dataRequest = create(DocumentIntakeRequestSchema, {
+      const dataRequest = {
         sessionInfo: {
-          case: 'document',
+          case: 'document' as const,
           value: dataDocumentData,
         },
-      }) as DocumentIntakeRequest;
+      };
 
       // Fire and forget data chunks (don't wait for response)
       this.streamPool.queueDocument(dataRequest, false);
@@ -226,7 +226,7 @@ export class DocumentStreamer {
     const finalSize = hashCalculator.getBytesProcessed();
     const footerChunk = createFooterChunk(documentRef, chunkNumber, finalSize, sha256);
 
-    const footerDocumentData = create(DocumentDataSchema, {
+    const footerDocumentData = {
       sourceId: relativePath,
       filename: metadata.filename,
       path: metadata.path,
@@ -235,17 +235,17 @@ export class DocumentStreamer {
       checksum: hashCalculator.getHashBase64(),
       checksumType: 'SHA256',
       content: {
-        case: 'chunk',
-        value: footerChunk,
+        case: 'chunk' as const,
+        value: footerChunk as any, // Full StreamingChunk message is compatible with MessageInit
       },
-    });
+    };
 
-    const footerRequest = create(DocumentIntakeRequestSchema, {
+    const footerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: footerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     // Wait for response on footer to get final documentId (use relativePath as correlation key since that's the sourceId)
     const result = await this.streamPool.queueDocument(footerRequest, true, relativePath);
@@ -272,7 +272,7 @@ export class DocumentStreamer {
     // Create header chunk
     const headerChunk = createHeaderChunk(documentRef, metadata);
 
-    const headerDocumentData = create(DocumentDataSchema, {
+    const headerDocumentData = {
       sourceId: fileName,
       filename: metadata.filename,
       path: metadata.path,
@@ -286,19 +286,19 @@ export class DocumentStreamer {
         seconds: BigInt(Math.floor(metadata.sourceModified.getTime() / 1000)),
         nanos: 0,
       }) : undefined,
-      sourceMetadata: metadata.sourceMetadata,
+      sourceMetadata: metadata.sourceMetadata ?? {},
       content: {
-        case: 'chunk',
-        value: headerChunk,
+        case: 'chunk' as const,
+        value: headerChunk as any, // Full StreamingChunk message is compatible with MessageInit
       },
-    });
+    };
 
-    const headerRequest = create(DocumentIntakeRequestSchema, {
+    const headerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: headerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     await this.streamPool.queueDocument(headerRequest);
 
@@ -313,24 +313,24 @@ export class DocumentStreamer {
 
       const dataChunk = createDataChunk(documentRef, chunkNumber++, chunkData, false);
 
-      const dataDocumentData = create(DocumentDataSchema, {
+      const dataDocumentData = {
         sourceId: fileName,
         filename: metadata.filename,
         path: metadata.path,
         mimeType: metadata.mimeType,
         sizeBytes: metadata.sizeBytes,
         content: {
-          case: 'chunk',
-          value: dataChunk,
+          case: 'chunk' as const,
+          value: dataChunk as any, // Full StreamingChunk message is compatible with MessageInit
         },
-      });
+      };
 
-      const dataRequest = create(DocumentIntakeRequestSchema, {
+      const dataRequest = {
         sessionInfo: {
-          case: 'document',
+          case: 'document' as const,
           value: dataDocumentData,
         },
-      }) as DocumentIntakeRequest;
+      };
 
       await this.streamPool.queueDocument(dataRequest);
       offset += chunkSize;
@@ -341,7 +341,7 @@ export class DocumentStreamer {
     const finalSize = hashCalculator.getBytesProcessed();
     const footerChunk = createFooterChunk(documentRef, chunkNumber, finalSize, sha256);
 
-    const footerDocumentData = create(DocumentDataSchema, {
+    const footerDocumentData = {
       sourceId: fileName,
       filename: metadata.filename,
       path: metadata.path,
@@ -350,17 +350,17 @@ export class DocumentStreamer {
       checksum: hashCalculator.getHashBase64(),
       checksumType: 'SHA256',
       content: {
-        case: 'chunk',
-        value: footerChunk,
-        },
-    });
+        case: 'chunk' as const,
+        value: footerChunk as any, // Full StreamingChunk message is compatible with MessageInit
+      },
+    };
 
-    const footerRequest = create(DocumentIntakeRequestSchema, {
+    const footerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: footerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     const result = await this.streamPool.queueDocument(footerRequest);
 
@@ -386,7 +386,7 @@ export class DocumentStreamer {
     // Create header chunk
     const headerChunk = createHeaderChunk(documentRef, metadata);
 
-    const headerDocumentData = create(DocumentDataSchema, {
+    const headerDocumentData = {
       sourceId: fileName,
       filename: metadata.filename,
       path: metadata.path,
@@ -400,19 +400,19 @@ export class DocumentStreamer {
         seconds: BigInt(Math.floor(metadata.sourceModified.getTime() / 1000)),
         nanos: 0,
       }) : undefined,
-      sourceMetadata: metadata.sourceMetadata,
+      sourceMetadata: metadata.sourceMetadata ?? {},
       content: {
-        case: 'chunk',
-        value: headerChunk,
+        case: 'chunk' as const,
+        value: headerChunk as any, // Full StreamingChunk message is compatible with MessageInit
       },
-    });
+    };
 
-    const headerRequest = create(DocumentIntakeRequestSchema, {
+    const headerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: headerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     await this.streamPool.queueDocument(headerRequest);
 
@@ -432,24 +432,24 @@ export class DocumentStreamer {
 
         const dataChunk = createDataChunk(documentRef, chunkNumber++, chunkData, false);
 
-        const dataDocumentData = create(DocumentDataSchema, {
+        const dataDocumentData = {
           sourceId: fileName,
           filename: metadata.filename,
           path: metadata.path,
           mimeType: metadata.mimeType,
           sizeBytes: metadata.sizeBytes,
           content: {
-            case: 'chunk',
-            value: dataChunk,
+            case: 'chunk' as const,
+            value: dataChunk as any, // Full StreamingChunk message is compatible with MessageInit
           },
-        });
+        };
 
-        const dataRequest = create(DocumentIntakeRequestSchema, {
+        const dataRequest = {
           sessionInfo: {
-            case: 'document',
+            case: 'document' as const,
             value: dataDocumentData,
           },
-        }) as DocumentIntakeRequest;
+        };
 
         await this.streamPool.queueDocument(dataRequest);
       }
@@ -461,24 +461,24 @@ export class DocumentStreamer {
 
       const dataChunk = createDataChunk(documentRef, chunkNumber++, buffer, false);
 
-      const dataDocumentData = create(DocumentDataSchema, {
+      const dataDocumentData = {
         sourceId: fileName,
         filename: metadata.filename,
         path: metadata.path,
         mimeType: metadata.mimeType,
         sizeBytes: metadata.sizeBytes,
         content: {
-          case: 'chunk',
-          value: dataChunk,
+          case: 'chunk' as const,
+          value: dataChunk as any, // Full StreamingChunk message is compatible with MessageInit
         },
-      });
+      };
 
-      const dataRequest = create(DocumentIntakeRequestSchema, {
+      const dataRequest = {
         sessionInfo: {
-          case: 'document',
+          case: 'document' as const,
           value: dataDocumentData,
         },
-      }) as DocumentIntakeRequest;
+      };
 
       await this.streamPool.queueDocument(dataRequest);
     }
@@ -488,7 +488,7 @@ export class DocumentStreamer {
     const finalSize = hashCalculator.getBytesProcessed();
     const footerChunk = createFooterChunk(documentRef, chunkNumber, finalSize, sha256);
 
-    const footerDocumentData = create(DocumentDataSchema, {
+    const footerDocumentData = {
       sourceId: fileName,
       filename: metadata.filename,
       path: metadata.path,
@@ -497,17 +497,17 @@ export class DocumentStreamer {
       checksum: hashCalculator.getHashBase64(),
       checksumType: 'SHA256',
       content: {
-        case: 'chunk',
-        value: footerChunk,
+        case: 'chunk' as const,
+        value: footerChunk as any, // Full StreamingChunk message is compatible with MessageInit
       },
-    });
+    };
 
-    const footerRequest = create(DocumentIntakeRequestSchema, {
+    const footerRequest = {
       sessionInfo: {
-        case: 'document',
+        case: 'document' as const,
         value: footerDocumentData,
       },
-    }) as DocumentIntakeRequest;
+    };
 
     const result = await this.streamPool.queueDocument(footerRequest);
 

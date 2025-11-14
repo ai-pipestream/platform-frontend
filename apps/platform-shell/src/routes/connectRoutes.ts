@@ -3,7 +3,7 @@ import { createClient } from "@connectrpc/connect";
 import { createGrpcTransport } from "@connectrpc/connect-node";
 import { PipeStepProcessor } from "@ai-pipestream/grpc-stubs/dist/module/module_service_pb";
 import { MappingService } from "@ai-pipestream/grpc-stubs/dist/mapping-service/mapping_service_pb";
-import { PlatformRegistration, type ServiceListResponse } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
+import { PlatformRegistration } from "@ai-pipestream/grpc-stubs/dist/registration/platform_registration_pb";
 import { Health } from "@ai-pipestream/grpc-stubs/dist/grpc/health/v1/health_pb";
 import { ShellService } from "@ai-pipestream/grpc-stubs/dist/frontend/shell_service_pb";
 import { NodeUploadService } from "@ai-pipestream/grpc-stubs/dist/repository/filesystem/upload/upload_service_pb";
@@ -57,7 +57,7 @@ export default (router: ConnectRouter) => {
       const prClient = createClient(PlatformRegistration, registrationTransport);
       let services: Array<{ serviceName: string; tags: string[] }>; 
       try {
-        const list = await prClient.listServices({} as any) as ServiceListResponse;
+        const list = await prClient.listServices({});
         services = (list.services ?? []).map(s => ({
           serviceName: (s as any).serviceName ?? "",
           tags: ((s as any).tags ?? []) as string[],

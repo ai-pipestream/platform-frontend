@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@ai-pipestream/grpc-stubs": "catalog:",
-    "@bufbuild/protobuf": "^2.10.0",
+    "@bufbuild/protobuf": "^2.10.1",
     "@connectrpc/connect": "^2.1.0",
     "@connectrpc/connect-web": "^2.1.0",
     "@connectrpc/connect-node": "^2.1.0",
