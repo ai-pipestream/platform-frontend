@@ -292,3 +292,4 @@ fabric.properties
 .idea
 .claude
 .copilot*
+/CLAUDE.md
