@@ -4,12 +4,7 @@
     <v-tooltip location="top">
       <template v-slot:activator="{ props: tooltipProps }">
         <div v-bind="tooltipProps" class="d-flex align-center cursor-pointer">
-          <v-icon 
-            :color="healthInfo.color" 
-            :icon="healthInfo.icon" 
-            :size="compactSize"
-            class="compact-icon"
-          />
+          <v-icon :color="healthInfo.color" :icon="healthInfo.icon" :size="compactSize" class="compact-icon" />
           <span v-if="!iconOnly" class="ml-1 text-caption">{{ healthInfo.compactText || healthInfo.text }}</span>
         </div>
       </template>
@@ -127,18 +122,18 @@ const connect = async () => {
 
   try {
     console.log('[GrpcHealthStatus] Starting health watch for target:', props.target || 'default');
-    
+
     // Use the computed client property
     // Note: Most gRPC health services only respond to empty service name for overall health
     // Watch streams should not timeout - they're meant to stay open
     const stream = client.value.watch(
-      { service: "" }, 
-      { 
+      { service: "" },
+      {
         signal: abortController.signal,
         timeoutMs: undefined // Disable timeout for streaming calls
       }
     );
-    
+
     console.log('[GrpcHealthStatus] Stream created, waiting for responses...');
 
     for await (const response of stream) {
@@ -157,7 +152,7 @@ const connect = async () => {
           break;
       }
     }
-    
+
     console.log('[GrpcHealthStatus] Stream ended');
     if (props.autoReconnect) {
       scheduleReconnect();
@@ -196,37 +191,37 @@ const disconnect = () => {
 const healthInfo = computed(() => {
   switch (status.value) {
     case 'SERVING':
-      return { 
-        color: 'success', 
-        icon: 'mdi-check-circle', 
+      return {
+        color: 'success',
+        icon: 'mdi-check-circle',
         text: 'Healthy',
         compactText: 'Connected'
       };
     case 'NOT_SERVING':
-      return { 
-        color: 'warning', 
-        icon: 'mdi-alert-circle', 
+      return {
+        color: 'warning',
+        icon: 'mdi-alert-circle',
         text: 'Not Serving',
         compactText: 'Disconnected'
       };
     case 'CONNECTING':
-      return { 
-        color: 'info', 
-        icon: 'mdi-loading mdi-spin', 
+      return {
+        color: 'info',
+        icon: 'mdi-loading mdi-spin',
         text: 'Connecting...',
         compactText: 'Connecting'
       };
     case 'ERROR':
-      return { 
-        color: 'error', 
-        icon: 'mdi-close-circle', 
+      return {
+        color: 'error',
+        icon: 'mdi-close-circle',
         text: 'Error',
         compactText: 'Error'
       };
     default:
-      return { 
-        color: 'grey', 
-        icon: 'mdi-help-circle', 
+      return {
+        color: 'grey',
+        icon: 'mdi-help-circle',
         text: 'Unknown',
         compactText: 'Unknown'
       };
@@ -246,15 +241,15 @@ const formatTimestamp = (date: Date) => {
 // Watch for changes to the client (which happens when the target prop changes)
 // and automatically reconnect.
 watch(client, () => {
-    console.log('[GrpcHealthStatus] Client changed, reconnecting...');
-    connect();
+  console.log('[GrpcHealthStatus] Client changed, reconnecting...');
+  connect();
 }, { immediate: true }); // Add immediate: true to trigger on mount
 
 onUnmounted(() => {
   console.log('[GrpcHealthStatus] Component unmounting, disconnecting...');
   isUnmounted = true;
   disconnect();
-  
+
   // Cleanup HMR listener
   if (hmrCleanup && import.meta.hot) {
     import.meta.hot.off('vite:beforeUpdate', hmrCleanup);
@@ -270,8 +265,13 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .compact-health-status {
