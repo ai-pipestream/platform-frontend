@@ -105,6 +105,17 @@ const reconnectAttempts = ref(0);
 let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 let abortController: AbortController | null = null;
 let isUnmounted = false;
+let hmrCleanup: (() => void) | null = null;
+
+// HMR-aware cleanup: cleanup stream when module is hot-reloaded
+if (import.meta.hot) {
+  hmrCleanup = () => {
+    console.log('[GrpcHealthStatus] HMR detected, cleaning up stream');
+    isUnmounted = true;
+    disconnect();
+  };
+  import.meta.hot.on('vite:beforeUpdate', hmrCleanup);
+}
 
 const connect = async () => {
   if (isUnmounted) return;
@@ -243,6 +254,12 @@ onUnmounted(() => {
   console.log('[GrpcHealthStatus] Component unmounting, disconnecting...');
   isUnmounted = true;
   disconnect();
+  
+  // Cleanup HMR listener
+  if (hmrCleanup && import.meta.hot) {
+    import.meta.hot.off('vite:beforeUpdate', hmrCleanup);
+    hmrCleanup = null;
+  }
 });
 
 </script>
